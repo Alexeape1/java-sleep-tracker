@@ -1,5 +1,4 @@
 package ru.yandex.practicum.sleeptracker;
-import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -7,15 +6,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.io.IOException;
-import java.time.*;
-import java.util.*;
 
 public class SleepTrackerApp {
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern("dd.MM.yy HH:mm");
 
     private static final List<SleepAnalysisFunction> ANALYSIS_FUNCTIONS = List.of(
-            new TotalSessionsFunction(),
+            new TotalSessionFunction(),
             new MinDurationFunction(),
             new MaxDurationFunction(),
             new AverageDurationFunction(),

@@ -2,7 +2,7 @@ package ru.yandex.practicum.sleeptracker;
 
 import java.util.List;
 
-class TotalSessionsFunction implements SleepAnalysisFunction {
+class TotalSessionFunction implements SleepAnalysisFunction {
 
     @Override
     public String getFunctionName() {
