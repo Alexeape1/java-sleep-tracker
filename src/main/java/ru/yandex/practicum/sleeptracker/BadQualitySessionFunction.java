@@ -2,7 +2,7 @@ package ru.yandex.practicum.sleeptracker;
 
 import java.util.List;
 
-class BadQualitySessionsFunction implements SleepAnalysisFunction {
+class BadQualitySessionFunction implements SleepAnalysisFunction {
 
     @Override
     public String getFunctionName() {

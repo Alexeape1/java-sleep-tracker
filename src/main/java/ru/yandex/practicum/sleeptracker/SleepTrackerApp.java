@@ -16,7 +16,7 @@ public class SleepTrackerApp {
             new MinDurationFunction(),
             new MaxDurationFunction(),
             new AverageDurationFunction(),
-            new BadQualitySessionsFunction(),
+            new BadQualitySessionFunction(),
             new SleeplessNightsFunction(),
             new ChronotypeFunction()
     );
