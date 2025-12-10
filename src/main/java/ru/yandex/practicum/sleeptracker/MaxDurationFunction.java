@@ -13,8 +13,7 @@ class MaxDurationFunction implements SleepAnalysisFunction {
     public SleepAnalysisResult apply(List<SleepingSession> sessions) {
         long maxDuration = sessions.stream()
                 .mapToLong(SleepingSession::getDurationInMinutes)
-                .sorted()
-                .reduce((first, second) -> second)
+                .max()
                 .orElse(0L);
         return new SleepAnalysisResult(getFunctionName(), maxDuration);
     }

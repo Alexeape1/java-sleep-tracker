@@ -22,10 +22,15 @@ public class SleepTrackerApp {
     );
 
     private static List<SleepingSession> readSleepLog(String filePath) throws IOException {
-        return Files.lines(Paths.get(filePath))
-                .filter(line -> !line.trim().isEmpty())
-                .map(SleepTrackerApp::parseSleepSession)
-                .collect(Collectors.toList());
+        try {
+          return   Files.lines(Paths.get(filePath))
+                    .filter(line -> !line.trim().isEmpty())
+                    .map(SleepTrackerApp::parseSleepSession)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyList();
     }
 
     private static SleepingSession parseSleepSession(String line) {

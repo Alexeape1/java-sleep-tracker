@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -66,6 +67,7 @@ class SleepTrackerAppTest {
     @Test
     @DisplayName("Проверка определения максимальной продолжительности сна")
     void testMaxDuration() {
+        MaxDurationFunction function = new MaxDurationFunction();
         List<SleepingSession> sessions = Arrays.asList(
                 new SleepingSession(
                         LocalDateTime.of(2025, 10, 1, 22, 0),
@@ -81,14 +83,12 @@ class SleepTrackerAppTest {
                         SleepQuality.NORMAL)
         );
 
-// Не могу понять. Почему-то когда делаю такую же проверку, как в testMinDuration, то этот тест не проходит.
-        // А вот через stream  уже все ок
-        long maxDuration = sessions.stream()
-                .mapToLong(SleepingSession::getDurationInMinutes)
-                .max()
-                .orElse(0);
+// Исправил в классе MaxDurationFunction на просто max(), без reduce и sorted, и теперь все ок!
 
-        assertEquals(480, maxDuration);
+        SleepAnalysisResult result = function.apply(sessions);
+        assertEquals("Максимальная продолжительность сессии (минут)", result.getDescription());
+        assertEquals(480L, result.getValue());
+
     }
 
     @Test
@@ -166,6 +166,15 @@ class SleepTrackerAppTest {
     }
 
     @Test
+    @DisplayName("Определение количества бессонных ночей, если файл пуст")
+    void testSleeplessNightsIfListEmpty() {
+        List<SleepingSession> sessions = new ArrayList<>();
+        SleeplessNightsFunction function = new SleeplessNightsFunction();
+        SleepAnalysisResult result = function.apply(sessions);
+        assertEquals(0, result.getValue());
+    }
+
+    @Test
     @DisplayName("Проверка на верное определение хронотипа")
     void testChronotypeDetermination() {
         List<SleepingSession> sessions = Arrays.asList(
@@ -179,8 +188,8 @@ class SleepTrackerAppTest {
                         LocalDateTime.of(2025, 10, 3, 6, 30),
                         SleepQuality.NORMAL),
                 new SleepingSession(
-                        LocalDateTime.of(2025, 10, 3, 22, 30),
-                        LocalDateTime.of(2025, 10, 4, 7, 30),
+                        LocalDateTime.of(2025, 10, 3, 23, 1),
+                        LocalDateTime.of(2025, 10, 4, 13, 30),
                         SleepQuality.NORMAL)
         );
 
@@ -196,6 +205,51 @@ class SleepTrackerAppTest {
                 System.out.println("Голубь: " + session);
             }
         });
+        ChronotypeFunction function = new ChronotypeFunction();
+        SleepAnalysisResult result = function.apply(sessions);
+
+        assertEquals("Сова", result.getValue());
+    }
+
+    @Test
+    @DisplayName("Проверка на верное определение хронотипа, если их одинаковое количество")
+    void testChronotypeDeterminationIfEquals() {
+        List<SleepingSession> sessions = Arrays.asList(
+
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 1, 23, 30),
+                        LocalDateTime.of(2025, 10, 2, 9, 30),
+                        SleepQuality.GOOD),
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 2, 21, 0),
+                        LocalDateTime.of(2025, 10, 3, 6, 30),
+                        SleepQuality.NORMAL),
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 3, 23, 59),
+                        LocalDateTime.of(2025, 10, 4, 10, 0),
+                        SleepQuality.NORMAL),
+        new SleepingSession(
+                LocalDateTime.of(2025, 10, 3, 21, 59),
+                LocalDateTime.of(2025, 10, 4, 6, 59),
+                SleepQuality.NORMAL)
+        );
+
+        sessions.forEach(session -> {
+            LocalTime sleepTime = session.getSleepTime().toLocalTime();
+            LocalTime wakeTime = session.getWakeTime().toLocalTime();
+
+            if (sleepTime.isAfter(LocalTime.of(23, 0)) && wakeTime.isAfter(LocalTime.of(9, 0))) {
+                System.out.println("Сова: " + session);
+            } else if (sleepTime.isBefore(LocalTime.of(22, 0)) && wakeTime.isBefore(LocalTime.of(7, 0))) {
+                System.out.println("Жаворонок: " + session);
+            } else {
+                System.out.println("Голубь: " + session);
+            }
+        });
+        ChronotypeFunction function = new ChronotypeFunction();
+        SleepAnalysisResult result = function.apply(sessions);
+
+        assertEquals("Голубь", result.getValue());
     }
 
     @Test
